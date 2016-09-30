@@ -1,129 +1,107 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <ctype.h>
 
-int Char_to_Int(char *c);
-void arr_print(int *arr);
-void delete_arr(char *c);
-void sort(int n, int *a);
+long char_to_int(char *c);
+void arr_print(long *arr, long N);
+void sort(long n, long *a);
+int get_number_from_file(FILE* open_file,char number[]);
+void file_arr_print(long *arr, long N, FILE* file);
 
-int main() {
+
+int main(){
 
     FILE *in_file;
-    char file[] = "data_in.txt";
-    int c;
-    int *a;
-    int N;
-    int k = 0, y = 0;
-    int i = 0;
-    char number[13];
+    char file[] = "C:\\data_in.txt";
+    char number[20];
+    long *a;
 
     if ((in_file = fopen(file,"r")) == NULL) {
-        perror("Failed to open file \"data_in.txt\"\n");
+        printf("Failed to open file: %10s\n",file);
         return EXIT_FAILURE;
     }
+    long N;
+    for(int number_of_number = 0, i = 0;!feof(in_file); ){
 
-    do{
-        if ((c >= 48 && c <= 57) || c == 45){
-            number[i] = c;
-//            printf("number[%d] = %c\n",i,number[i]);
-            i++;
-        }
+        if(get_number_from_file(in_file,number)){
 
-        if (c == 32 || c == '\n')
-        {
-            i=0;
-            k+=1;
-            if(k==1)
-            {
-                N = Char_to_Int(number);
-                a = (int*) malloc(N*sizeof(int));
-//                printf("N = %d\n",N);
-                delete_arr(number);
+            number_of_number++;
+
+            if(number_of_number == 1){
+                N = char_to_int(number);
+                printf("N = %5ld\n",N);
+                a = (long*)malloc(sizeof(N));
             }
-            if (k>1)
-            {
-                a[y] = Char_to_Int(number);
-//                arr_print(a);
-                y++;
-                delete_arr(number);
+            if(number_of_number > 1){
+                a[i] = char_to_int(number);
+                printf("a[%d] = %5ld\n",i,a[i]);
+                i++;
             }
-//            printf("________________\n");
         }
-
     }
-    while((c = fgetc(in_file)) != EOF);
-    printf("_______BEFORE_________\n");
-    printf("N = %d\n",N);
-    arr_print(a);
-    printf("_______BEFORE_________\n");
+    fclose(in_file);
+    printf("___________BEFORE___________\n");
+    arr_print(a,N);
+    printf("____________NOW___________\n");
+    FILE* file_write = fopen("C:\\data_out.txt","wb");
 
     sort(N,a);
-    printf("_______RESULT_________\n");
-    printf("N = %d\n",N);
-    arr_print(a);
-    printf("_______RESULT_________\n");
-
-    fclose(in_file);
-    //Запись в фаил
-    FILE *out_file;
-    if ((out_file = fopen("data_out.txt","wb")) == NULL)
-           printf("Failed to open file \"data_out.txt\"\n");
-    else{
-           int i = 0;
-           while(a[i]!= '\0')
-           {
-               fprintf(out_file, "%d ", a[i]);
-               i++;
-           }
-
-         }
-
-    fclose(out_file);
-
-
-
+    arr_print(a,N);
+    file_arr_print(a, N,file_write);
 
     free(a);
     return 0;
 }
 
-int Char_to_Int(char *c){
-    int Num = 0;
+//вытаскиваем числа из потока чтения файла
+int get_number_from_file(FILE* open_file,char number[]){
+
+    char c = fgetc(open_file);
+    int i = 0;
+    for( ;(c >= 48 && c <= 57) || c == 45; i++, c = fgetc(open_file))
+        number[i] = c;
+
+    number[i] = '\0';
+
+
+    if(number[0] == '\0')
+        return 0;
+
+    return 1;
+}
+
+long char_to_int(char *c){
+    long Num = 0;
     int sign=1;
-    for(int i = 0;c[i];i++)
-    {
-        if(c[i] == 45)
-        {
+    for(int i = 0;c[i]!='\0';i++){
+        if(c[i] == 45){
             sign = -1;
             continue;
         }
 
         Num = Num*10+(c[i]-'0');
     }
-//    printf("Num = %d \n",Num*sign);
     return Num*sign;
 }
 
-void arr_print(int *arr) {
+void arr_print(long *arr, long N) {
     printf("The array is: ");
-    while(*arr)
-        printf("%d ", *arr++);
-      printf("\n");
+    for(int i = 0;i<N;i++)
+        printf("%ld ",arr[i]);
+    printf("\n");
+}
+void file_arr_print(long *arr, long N, FILE* file) {
+    fprintf(file,"The array is: ");
+    for(int i = 0;i<N;i++)
+        fprintf(file,"%ld ",arr[i]);
+    fprintf(file,"\n");
 }
 
-void delete_arr(char *c){
-    while(*c)
-    {
-        *c = '\0';
-        *c++;
-    }
-}
-
-void sort(int n, int *a){
-    for(int i = 0 ; i < n - 1; i++) {
+void sort(long n, long *a){
+    for(long i = 0 ; i < n - 1; i++) {
            // сравниваем два соседних элемента.
-           for(int j = 0 ; j < n - i - 1 ; j++) {
+           for(long j = 0 ; j < n - i - 1 ; j++) {
                if(a[j] > a[j+1]) {
                   // если они идут в неправильном порядке, то
                   //  меняем их местами.
@@ -134,4 +112,3 @@ void sort(int n, int *a){
             }
         }
 }
-
