@@ -31,7 +31,7 @@ int main(){
             if(number_of_number == 1){
                 N = char_to_int(number);
                 printf("N = %5ld\n",N);
-                a = (long*)malloc(sizeof(N));
+                a = (long*)malloc(sizeof(N*sizeof(long)));
             }
             if(number_of_number > 1){
                 a[i] = char_to_int(number);
