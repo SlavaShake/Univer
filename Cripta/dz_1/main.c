@@ -49,7 +49,7 @@ int main(){
     sort(N,a);
     arr_print(a,N);
     file_arr_print(a, N,file_write);
-
+    fclose(file_write);
     free(a);
     return 0;
 }
