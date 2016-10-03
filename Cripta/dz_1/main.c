@@ -13,7 +13,7 @@ void file_arr_print(long *arr, long N, FILE* file);
 int main(){
 
     FILE *in_file;
-    char file[] = "C:\\data_in.txt";
+    char file[] = "data_in.txt";
     char number[20];
     long *a;
 
@@ -31,7 +31,7 @@ int main(){
             if(number_of_number == 1){
                 N = char_to_int(number);
                 printf("N = %5ld\n",N);
-                a = (long*)malloc(sizeof(N*sizeof(long)));
+                a = (long*)malloc(N*sizeof(long));
             }
             if(number_of_number > 1){
                 a[i] = char_to_int(number);
@@ -44,7 +44,7 @@ int main(){
     printf("___________BEFORE___________\n");
     arr_print(a,N);
     printf("____________NOW___________\n");
-    FILE* file_write = fopen("C:\\data_out.txt","wb");
+    FILE* file_write = fopen("data_out.txt","wb");
 
     sort(N,a);
     arr_print(a,N);
@@ -55,7 +55,7 @@ int main(){
 }
 
 //вытаскиваем числа из потока чтения файла
-int get_number_from_file(FILE* open_file,char number[]){
+int get_number_from_file(FILE* open_file,char *number){
 
     char c = fgetc(open_file);
     int i = 0;
@@ -92,7 +92,7 @@ void arr_print(long *arr, long N) {
     printf("\n");
 }
 void file_arr_print(long *arr, long N, FILE* file) {
-    fprintf(file,"The array is: ");
+    fprintf(file,"The array is: \n");
     for(int i = 0;i<N;i++)
         fprintf(file,"%ld ",arr[i]);
     fprintf(file,"\n");
